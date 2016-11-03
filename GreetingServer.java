@@ -29,22 +29,29 @@ public class GreetingServer extends Thread {
 			while(true){
 				/* Read data from the ClientSocket */
 				DataInputStream in = new DataInputStream(server.getInputStream());
-				System.out.println(in.readUTF());
-
+				//System.out.println(">"+in.readUTF());
+				
+				String clientMsg = in.readUTF().toString();
+				
+				String[] tokens = clientMsg.split("\\`");
+				// tokens[0] == client address
+				// tokens[1] == message
+				
+				System.out.println(tokens[0] + ": " + tokens[1]);
+				
 				DataOutputStream out = new DataOutputStream(server.getOutputStream());
 
 				/* Send data to the ClientSocket */
-				out.writeUTF("Thank you for connecting to " + server.getLocalSocketAddress() + "\nGoodbye!");
+				//out.writeUTF("Thank you for connecting to " + server.getLocalSocketAddress() + "\nGoodbye!");
 				
 				//
-				if(in.readUTF().toString() == "/exit") {
+				if(in.readUTF().toString().compareTo("/exit")==0) {
 					System.out.println("foo");
 					server.close();
 					System.out.println("Server ended the connection to "+ server.getRemoteSocketAddress());
 				}
 			}
 			// connected = false;
-			System.out.println("pwe");
 			}catch(SocketTimeoutException s) {
 				System.out.println("Socket timed out!");
 				break;

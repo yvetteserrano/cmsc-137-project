@@ -22,21 +22,24 @@ public class GreetingClient {
 			while(true) {
 				System.out.print("Message: ");
 				message = scanner.nextLine();
-				System.out.println("-->"+message);
+				System.out.println(scanner.nextLine());
 				if(message == "/exit") {
+					System.out.println("exit");
 					client.close();
 					break;
 				}
-				
+				//~ System.out.println("1");
 				/* Send data to the ServerSocket */
 				OutputStream outToServer = client.getOutputStream();
 				DataOutputStream out = new DataOutputStream(outToServer);
-				out.writeUTF("Client " + client.getLocalSocketAddress()+" says: " +message);
-
+				out.writeUTF(client.getLocalSocketAddress()+"`"+message);
+				//~ System.out.println("2");
 				/* Receive data from the ServerSocket */
 				InputStream inFromServer = client.getInputStream();
+				//~ System.out.println("2.1");
 				DataInputStream in = new DataInputStream(inFromServer);
-				System.out.println("Server says " + in.readUTF());
+				//~ System.out.println("Server says " + in.readUTF());
+				//~ System.out.println("3");
 			}
 			 //insert missing line for closing the socket from the client side - client.close()
 			System.out.println("goooo");
