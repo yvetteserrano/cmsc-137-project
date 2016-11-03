@@ -7,8 +7,8 @@ public class GreetingClient {
 		try {
 			String serverName = args[0]; //get IP address of server from first param
 			int port = Integer.parseInt(args[1]); //get port from second param
+			String nickname = args[2];
 			String message;
-			// String message = args[2]; //get message from the third param
 
 			/* Open a ClientSocket and connect to ServerSocket */
 			System.out.println("Connecting to " + serverName + " on port " + port);
@@ -19,35 +19,42 @@ public class GreetingClient {
 			System.out.println("Just connected to " + client.getRemoteSocketAddress());
 
 			Scanner scanner = new Scanner(System.in);//for getting inputs
+			
+			OutputStream outToServer;
+			DataOutputStream out;
+			InputStream inFromServer;
+			DataInputStream in;
+			
 			while(true) {
 				System.out.print("Message: ");
-				message = scanner.nextLine();
-				System.out.println(scanner.nextLine());
+				message = "";
+				while(message.equals("")) {
+					message = scanner.nextLine();
+				}
+				//~ System.out.println(scanner.nextLine());
 				if(message == "/exit") {
 					System.out.println("exit");
 					client.close();
 					break;
 				}
-				//~ System.out.println("1");
 				/* Send data to the ServerSocket */
-				OutputStream outToServer = client.getOutputStream();
-				DataOutputStream out = new DataOutputStream(outToServer);
-				out.writeUTF(client.getLocalSocketAddress()+"`"+message);
-				//~ System.out.println("2");
+				outToServer = client.getOutputStream();
+				out = new DataOutputStream(outToServer);
+				out.writeUTF(client.getLocalSocketAddress()+"`"+nickname+"`"+message);
 				/* Receive data from the ServerSocket */
-				InputStream inFromServer = client.getInputStream();
-				//~ System.out.println("2.1");
-				DataInputStream in = new DataInputStream(inFromServer);
-				//~ System.out.println("Server says " + in.readUTF());
-				//~ System.out.println("3");
+				inFromServer = client.getInputStream();
+				System.out.println("foo");
+				in = new DataInputStream(inFromServer);
+				System.out.println("goo");
+				//~ System.out.println("Server says " + in.readUTF());	// TODO: PROBLEM CAUSED BY THIS LINE
+				System.out.println("hoo");
 			}
 			 //insert missing line for closing the socket from the client side - client.close()
-			System.out.println("goooo");
 			}catch(IOException e) {
 				//e.printStackTrace();
 				System.out.println("Cannot find Server");
 			}catch(ArrayIndexOutOfBoundsException e) {
-				System.out.println("Usage: java GreetingClient <server ip> <port no.> '<your message to the server>'");
+				System.out.println("Usage: java GreetingClient <server ip> <port no.> '<nickname>'");
 			}
 	}
 }

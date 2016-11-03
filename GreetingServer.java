@@ -24,32 +24,41 @@ public class GreetingServer extends Thread {
 		}
 		
 		public void run(){
+			
+			String clientMsg;
+			String[] tokens;
+			DataInputStream in;
+			DataOutputStream out;
+			
 			try{
-				/* Read data from the ClientSocket */
-				DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-				//System.out.println(">"+in.readUTF());
-				
-				String clientMsg = in.readUTF().toString();
-				
-				String[] tokens = clientMsg.split("\\`");
-				// tokens[0] == client address
-				// tokens[1] == message
-				
-				System.out.println(tokens[0] + ": " + tokens[1]);
-				
-				DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+				while(true) {
+					
+					/* Read data from the ClientSocket */
+					in = new DataInputStream(clientSocket.getInputStream());
+					//System.out.println(">"+in.readUTF());
+					
+					clientMsg = in.readUTF().toString();
+					
+					tokens = clientMsg.split("\\`");
+					// tokens[0] == client address
+					// tokens[1] == nickname
+					// tokens[2] == message
+					
+					System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
+					
+					out = new DataOutputStream(clientSocket.getOutputStream());
 
-				/* Send data to the ClientSocket */
-				//out.writeUTF("Thank you for connecting to " + server.getLocalSocketAddress() + "\nGoodbye!");
-				
-				//
-				if(in.readUTF().toString().compareTo("/exit")==0) {
-					System.out.println("foo");
-					clientSocket.close();
-					System.out.println("Server ended the connection to "+ clientSocket.getRemoteSocketAddress());
+					/* Send data to the ClientSocket */
+					//~ out.writeUTF("Thank you for connecting to " + clientSocket.getLocalSocketAddress() + "__" + tokens[2]);
+					out.writeUTF("(from server) " + tokens[0] + " " + tokens[1] + ": " + tokens[2]);
+					//
+					if(in.readUTF().toString().compareTo("/exit")==0) {
+						clientSocket.close();
+						System.out.println("Server ended the connection to "+ clientSocket.getRemoteSocketAddress());
+					}
 				}
 			}catch(IOException e) {
-				
+				e.printStackTrace();
 			}
 		}
 	}
