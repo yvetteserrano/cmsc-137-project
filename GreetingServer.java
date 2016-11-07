@@ -1,5 +1,3 @@
-   // File Name GreetingServer.java
-
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -26,6 +24,8 @@ public class GreetingServer extends Thread {
 		}
 		
 		public void run(){
+			
+			System.out.println(this + " running");
 			
 			String clientMsg;
 			String[] tokens;
@@ -77,11 +77,12 @@ public class GreetingServer extends Thread {
 					
 					for(int i=0; i<clientSockets.size(); i+=1) {
 						if(clientSockets.get(i) == clientSocket) {	//skip if self
-							continue;
+							// TODO: FIX SENDING TO SELF
+							//continue;
 						}
 						out = new DataOutputStream(clientSockets.get(i).getOutputStream());
 						for(int j=0; j<messages.size(); j+=1) {
-							out.writeUTF(clientAddresses.get(j) + "" + nicknames.get(j) + ": " + messages.get(j));
+							out.writeUTF(clientAddresses.get(j) + " (" + nicknames.get(j) + "): " + messages.get(j));
 						}
 					}
 					

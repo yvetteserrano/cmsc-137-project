@@ -3,6 +3,83 @@ import java.io.*;
 import java.util.Scanner;
 
 public class GreetingClient {
+	
+	public static class MessageSender extends Thread {
+		
+		Socket clientSocket;
+		String nickname;
+		
+		public MessageSender(Socket clientSocket, String nickname) {
+			this.clientSocket = clientSocket;
+			this.nickname = nickname;
+		}
+		
+		public void run() {
+			
+			System.out.println("Sender started");
+			
+			DataInputStream in;
+			DataOutputStream out;
+			String message;
+			Scanner scanner = new Scanner(System.in);
+			try{
+				
+				while(true) {
+					System.out.print("Message: ");
+					message = "";
+					while(message.equals("")) {
+						message = scanner.nextLine();
+					}
+					//~ System.out.println(scanner.nextLine());
+					if(message == "/exit") {
+						System.out.println("exit");
+						clientSocket.close();
+						this.stop();
+						break;
+					}
+					/* Send data to the ServerSocket */
+					out = new DataOutputStream(clientSocket.getOutputStream());
+					out.writeUTF(clientSocket.getLocalSocketAddress()+"`"+nickname+"`"+message);
+				}
+				
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static class MessageFetcher extends Thread {
+		
+		Socket clientSocket;	//client to fetch messages for
+		
+		public MessageFetcher(Socket clientSocket) {
+			this.clientSocket = clientSocket;
+		}
+		
+		public void run() {
+			
+			System.out.println("Fetcher started");
+			
+			DataInputStream in;
+			DataOutputStream out;
+			String message;
+			Scanner scanner = new Scanner(System.in);
+			try{
+				
+				while(true) {
+					/* Receive data from the ServerSocket */
+					in = new DataInputStream(clientSocket.getInputStream());
+					if(in.available() > 0) {
+						System.out.println(in.readUTF());
+					}
+				}
+				
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public static void main(String [] args) {
 		try {
 			String serverName = args[0]; //get IP address of server from first param
@@ -22,32 +99,17 @@ public class GreetingClient {
 			
 			OutputStream outToServer;
 			DataOutputStream out;
-			InputStream inFromServer;
-			DataInputStream in;
+			//~ InputStream inFromServer;
+			//~ DataInputStream in;
 			
-			while(true) {
-				System.out.print("Message: ");
-				message = "";
-				while(message.equals("")) {
-					message = scanner.nextLine();
-				}
-				//~ System.out.println(scanner.nextLine());
-				if(message == "/exit") {
-					System.out.println("exit");
-					client.close();
-					break;
-				}
-				/* Send data to the ServerSocket */
-				outToServer = client.getOutputStream();
-				out = new DataOutputStream(outToServer);
-				out.writeUTF(client.getLocalSocketAddress()+"`"+nickname+"`"+message);
-				/* Receive data from the ServerSocket */
-				inFromServer = client.getInputStream();
-				in = new DataInputStream(inFromServer);
-				if(in.available() > 0) {
-					System.out.println(in.readUTF());
-				}
-			}
+			MessageFetcher fetcher = new MessageFetcher(client);
+			fetcher.start();
+			
+			MessageSender sender = new MessageSender(client, nickname);
+			sender.start();
+			
+			
+			
 			 //insert missing line for closing the socket from the client side - client.close()
 			}catch(IOException e) {
 				//e.printStackTrace();
