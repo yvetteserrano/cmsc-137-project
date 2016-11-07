@@ -44,7 +44,9 @@ public class GreetingClient {
 				/* Receive data from the ServerSocket */
 				inFromServer = client.getInputStream();
 				in = new DataInputStream(inFromServer);
-				System.out.println(in.readUTF());
+				if(in.available() > 0) {
+					System.out.println(in.readUTF());
+				}
 			}
 			 //insert missing line for closing the socket from the client side - client.close()
 			}catch(IOException e) {

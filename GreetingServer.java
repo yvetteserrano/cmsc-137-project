@@ -37,31 +37,62 @@ public class GreetingServer extends Thread {
 					
 					//System.out.println("CLIENT SOCKETS>>"+clientSockets);
 					
-					for(int i=0; i<clientSockets.size(); i+=1) {
-						System.out.println(clientSockets.get(i));
-					}
+					//~ for(int i=0; i<clientSockets.size(); i+=1) {
+						//~ System.out.println(clientSockets.get(i));
+					//~ }
 					
 					/* Read data from the ClientSocket */
-					in = new DataInputStream(clientSocket.getInputStream());
+					//in = new DataInputStream(clientSocket.getInputStream());
 					//System.out.println(">"+in.readUTF());
 					
+					ArrayList<String> clientAddresses = new ArrayList<String>();
+					ArrayList<String> nicknames = new ArrayList<String>();
+					ArrayList<String> messages = new ArrayList<String>();
 					
-					clientMsg = in.readUTF().toString();
 					
-					tokens = clientMsg.split("\\`");
+					for(int i=0; i<clientSockets.size(); i+=1) {
+						in = new DataInputStream(clientSockets.get(i).getInputStream());
+						
+						if(in.available() > 0) {
+							clientMsg = in.readUTF().toString();
+							tokens = clientMsg.split("\\`");
+							clientAddresses.add(tokens[0]);
+							nicknames.add(tokens[1]);
+							messages.add(tokens[2]);
+							System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
+						} else {
+							continue;
+						}
+						
+					}
+					
+					//~ clientMsg = in.readUTF().toString();
+					
+					//~ tokens = clientMsg.split("\\`");
 					// tokens[0] == client address
 					// tokens[1] == nickname
 					// tokens[2] == message
 					
-					System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
+					//~ System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
 					
-					out = new DataOutputStream(clientSocket.getOutputStream());
+					for(int i=0; i<clientSockets.size(); i+=1) {
+						if(clientSockets.get(i) == clientSocket) {	//skip if self
+							continue;
+						}
+						out = new DataOutputStream(clientSockets.get(i).getOutputStream());
+						for(int j=0; j<messages.size(); j+=1) {
+							out.writeUTF(clientAddresses.get(j) + "" + nicknames.get(j) + ": " + messages.get(j));
+						}
+					}
+					
 
 					/* Send data to the ClientSocket */
 					//~ out.writeUTF("Thank you for connecting to " + clientSocket.getLocalSocketAddress() + "__" + tokens[2]);
-					out.writeUTF(tokens[0] + " " + tokens[1] + ": " + tokens[2]);
+					//~ out.writeUTF(tokens[0] + " " + tokens[1] + ": " + tokens[2]);
 					//
-					if(tokens[2].compareTo("/exit")==0) {
+					boolean foo = false;
+					if(foo) {
+					//~ if(tokens[2].compareTo("/exit")==0) {
 						clientSocket.close();
 						System.out.println("Server ended the connection to "+ clientSocket.getRemoteSocketAddress());
 					}
