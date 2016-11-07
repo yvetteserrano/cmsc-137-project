@@ -43,11 +43,8 @@ public class GreetingClient {
 				out.writeUTF(client.getLocalSocketAddress()+"`"+nickname+"`"+message);
 				/* Receive data from the ServerSocket */
 				inFromServer = client.getInputStream();
-				System.out.println("foo");
 				in = new DataInputStream(inFromServer);
-				System.out.println("goo");
-				//~ System.out.println("Server says " + in.readUTF());	// TODO: PROBLEM CAUSED BY THIS LINE
-				System.out.println("hoo");
+				System.out.println(in.readUTF());
 			}
 			 //insert missing line for closing the socket from the client side - client.close()
 			}catch(IOException e) {

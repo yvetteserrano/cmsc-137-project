@@ -17,10 +17,12 @@ public class GreetingServer extends Thread {
 	public class ClientThread extends Thread {
 		
 		Socket clientSocket;
+		ArrayList<Socket> clientSockets;
 		
-		public ClientThread(Socket clientSocket) {
+		public ClientThread(Socket clientSocket, ArrayList<Socket> clientSockets) {
 			this.clientSocket = clientSocket;
 			//~ this.threads = threads;
+			this.clientSockets = clientSockets;
 		}
 		
 		public void run(){
@@ -33,9 +35,16 @@ public class GreetingServer extends Thread {
 			try{
 				while(true) {
 					
+					//System.out.println("CLIENT SOCKETS>>"+clientSockets);
+					
+					for(int i=0; i<clientSockets.size(); i+=1) {
+						System.out.println(clientSockets.get(i));
+					}
+					
 					/* Read data from the ClientSocket */
 					in = new DataInputStream(clientSocket.getInputStream());
 					//System.out.println(">"+in.readUTF());
+					
 					
 					clientMsg = in.readUTF().toString();
 					
@@ -50,9 +59,9 @@ public class GreetingServer extends Thread {
 
 					/* Send data to the ClientSocket */
 					//~ out.writeUTF("Thank you for connecting to " + clientSocket.getLocalSocketAddress() + "__" + tokens[2]);
-					out.writeUTF("(from server) " + tokens[0] + " " + tokens[1] + ": " + tokens[2]);
+					out.writeUTF(tokens[0] + " " + tokens[1] + ": " + tokens[2]);
 					//
-					if(in.readUTF().toString().compareTo("/exit")==0) {
+					if(tokens[2].compareTo("/exit")==0) {
 						clientSocket.close();
 						System.out.println("Server ended the connection to "+ clientSocket.getRemoteSocketAddress());
 					}
@@ -79,7 +88,7 @@ public class GreetingServer extends Thread {
 			
 			clientSockets.add(clientSocket);
 			
-			ClientThread clientThread = new ClientThread(clientSocket);
+			ClientThread clientThread = new ClientThread(clientSocket, clientSockets);
 			clientThread.start();
 			
 			System.out.println("Just connected to " + clientSocket.getRemoteSocketAddress());
