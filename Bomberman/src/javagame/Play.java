@@ -4,8 +4,13 @@ import java.util.Random;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
+import org.newdawn.slick.gui.TextField;
+import org.newdawn.slick.gui.AbstractComponent;
+import org.newdawn.slick.gui.ComponentListener;
 
 public class Play extends BasicGameState {
+	
+//	TextField textField = new TextField(null, null, 10, 10, 100, 50);
 	
 	Image bomberman;
 	int bombermanX;
@@ -61,6 +66,7 @@ public class Play extends BasicGameState {
 	Animation moveLeft;
 	Animation moveRight;
 	
+	TextField field;
 	
 	int[] duration = {200, 200};
 	
@@ -73,6 +79,20 @@ public class Play extends BasicGameState {
 	}
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		
+		field = new TextField(gc, gc.getDefaultFont(), 60, 550, 120, 60, new ComponentListener() {
+			public void componentActivated(AbstractComponent source) {
+//				String message = "Entered1: "+field.getText();
+				field.setFocus(true);
+				
+			}
+		});
+		
+		
+		
+//		field.setBackgroundColor(Color.white);
+//		field.setTextColor(Color.black);
+		
 		
 		block = new Image("res/block.png");
 		brick = new Image("res/brick.png");
@@ -148,6 +168,8 @@ public class Play extends BasicGameState {
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		
+		g.drawString(Menu.nickname, 60, 30);
+		field.render(gc, g);
 		mapDrawX = 90;
 		mapDrawY = 90;
 		
@@ -179,7 +201,7 @@ public class Play extends BasicGameState {
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
-		if(input.isKeyDown(Input.KEY_W)) {
+		if(input.isKeyDown(Input.KEY_UP)) {
 			player = moveUp;	// change sprite
 			if(map[player1.mapIndexI()-1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BOMB) {
 				if(Math.abs(tempY - OFFSET) != MAP_OFFSET_Y) {	
@@ -190,7 +212,7 @@ public class Play extends BasicGameState {
 				}
 				player1.setPos(player1.posX(), player1.posY()-OFFSET);
 			}
-		} else if(input.isKeyDown(Input.KEY_S)) {
+		} else if(input.isKeyDown(Input.KEY_DOWN)) {
 			player = moveDown;	// change sprite
 			if(map[player1.mapIndexI()+1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
 				if(Math.abs(tempY + OFFSET) != MAP_OFFSET_Y) {	
@@ -201,7 +223,7 @@ public class Play extends BasicGameState {
 				}
 				player1.setPos(player1.posX(), player1.posY()+OFFSET);
 			}
-		} else if(input.isKeyDown(Input.KEY_A)) {
+		} else if(input.isKeyDown(Input.KEY_LEFT)) {
 			player = moveLeft;	// change sprite
 			if(map[player1.mapIndexI()][player1.mapIndexJ()-1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()-1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
 				if(Math.abs(tempX - OFFSET) != MAP_OFFSET_X) {	
@@ -212,7 +234,7 @@ public class Play extends BasicGameState {
 				}
 				player1.setPos(player1.posX()-OFFSET, player1.posY());
 			}
-		} else if(input.isKeyDown(Input.KEY_D)) {
+		} else if(input.isKeyDown(Input.KEY_RIGHT)) {
 			player = moveRight;	// change sprite
 			if(map[player1.mapIndexI()][player1.mapIndexJ()+1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()+1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
 				if(Math.abs(tempX + OFFSET) != MAP_OFFSET_X) {	
@@ -223,7 +245,7 @@ public class Play extends BasicGameState {
 				}
 				player1.setPos(player1.posX()+OFFSET, player1.posY());
 			}
-		} else if(input.isKeyPressed(Input.KEY_SPACE) && map[player1.mapIndexI()][player1.mapIndexJ()] != BOMB) {
+		} else if((input.isKeyPressed(Input.KEY_LSHIFT) || input.isKeyPressed(Input.KEY_RSHIFT)) && map[player1.mapIndexI()][player1.mapIndexJ()] != BOMB) {
 			map[player1.mapIndexI()][player1.mapIndexJ()] = BOMB;
 			final Bomb bomb = new Bomb(3, player1.power(), player1.mapIndexI(), player1.mapIndexJ());
 			Thread bombThread = new Thread(bomb) {
@@ -256,7 +278,6 @@ public class Play extends BasicGameState {
 			        	for(int x = 0; x <= bomb.power(); x+=1) {
 							// vertical
 							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-								System.out.println(x);
 								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
 									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
 									if(map[bomb.mapI()+x][bomb.mapJ()] == BRICK) {
@@ -266,10 +287,8 @@ public class Play extends BasicGameState {
 									break;
 								}
 							}
-							System.out.println("_");
 							// horizontal
 							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-								System.out.println(x);
 								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
 									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
 									if(map[bomb.mapI()][bomb.mapJ()+x] == BRICK) {
@@ -291,7 +310,6 @@ public class Play extends BasicGameState {
 									break;
 								}
 							}
-							System.out.println("_");
 							// horizontal
 							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
 								System.out.println(x);
@@ -309,7 +327,6 @@ public class Play extends BasicGameState {
 			        	for(int x = 0; x <= bomb.power(); x+=1) {
 							// vertical
 							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-								System.out.println(x);
 								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
 									map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
 								} else {
@@ -319,7 +336,6 @@ public class Play extends BasicGameState {
 							System.out.println("_");
 							// horizontal
 							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-								System.out.println(x);
 								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
 									map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
 								} else {
@@ -330,17 +346,14 @@ public class Play extends BasicGameState {
 			        	for(int x = 0; x >= -bomb.power(); x-=1) {
 							// vertical
 							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-								System.out.println(x);
 								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
 									map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
 								} else {
 									break;
 								}
 							}
-							System.out.println("_");
 							// horizontal
 							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-								System.out.println(x);
 								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
 									map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
 								} else {
@@ -358,7 +371,15 @@ public class Play extends BasicGameState {
 			};
 			bombThread.start();
 
+		} else if(input.isKeyDown(Input.KEY_ENTER)) {
+			if(field.hasFocus()) {
+				field.setFocus(false);
+			} else {
+				field.setFocus(true);
+			}
 		}
+		
+		
 		
 //		mapDrawX = 90;
 //		mapDrawY = 90;
