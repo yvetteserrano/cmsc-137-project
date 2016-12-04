@@ -15,26 +15,43 @@ public class Play extends BasicGameState {
 	Image brick;
 	Image grass;
 	Image bomb;
+	Image h_fire;
+	Image v_fire;
+	Image c_fire;
 	
 	int mapDrawX = 90;
 	int mapDrawY = 90;
 	int mapOffsetX = 30;
 	int mapOffsetY = 30;
 	
+	public boolean ALIVE = true;
+	
+	public static int MAP_OFFSET_X = 30;
+	public static int MAP_OFFSET_Y = 30;
+	
 	public static int NUM_OF_PLAYERS = 1;
-	public static int OFFSET = 1;
+	public static int OFFSET = 2;
 	public static final int ORIGIN = 90;
 	
 	public static final int GRASS = 0;
 	public static final int BRICK = 1;
 	public static final int BLOCK = 2;
 	public static final int BOMB = 3;
-	public static final int FIRE = 4;
+	public static final int FIRE_H = 4;
+	public static final int FIRE_V = 5;
+	public static final int FIRE_C = 6;
 	
 	public static int NUM_OF_ROWS = 15;
 	public static int NUM_OF_COLS = 21;
 	
-	public static int[][] map;
+	public int[][] map;
+	
+	int tempX = 0;
+	int tempY = 0;
+	
+	public int[][] map() {
+		return this.map;
+	}
 //	Image[] bombermanImgs = new Image[NUM_OF_PLAYERS];
 	
 	Animation bombAnimation;
@@ -49,20 +66,21 @@ public class Play extends BasicGameState {
 	
 	Bomberman player1 = new Bomberman(120, 120, 1, 1);
 	
+//	public static Play play = new Play(1);
 	
 	public Play(int state) {
 		
 	}
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-//		bomberman = new Image("res/bomberman-white.png");
-//		bombermanX = 90;
-//		bombermanY = 90;
 		
 		block = new Image("res/block.png");
 		brick = new Image("res/brick.png");
 		grass = new Image("res/grass.png");
 		bomb = new Image("res/bomb.png");
+		h_fire = new Image("res/fire-h.png");
+		v_fire = new Image("res/fire-v.png");
+		c_fire = new Image("res/fire.png");
 		
 		Image p1F = new Image("res/p1-front.png");
 		Image p1B = new Image("res/p1-back.png");
@@ -130,8 +148,6 @@ public class Play extends BasicGameState {
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		
-		Image p1F = new Image("res/p1-front.png");
-		
 		mapDrawX = 90;
 		mapDrawY = 90;
 		
@@ -145,6 +161,12 @@ public class Play extends BasicGameState {
 					block.draw(mapDrawX, mapDrawY);
 				} else if(map[i][j] ==  BOMB) {		
 					bomb.draw(mapDrawX, mapDrawY);
+				} else if(map[i][j] ==  FIRE_H) {		
+					h_fire.draw(mapDrawX, mapDrawY);
+				} else if(map[i][j] ==  FIRE_V) {		
+					v_fire.draw(mapDrawX, mapDrawY);
+				} else if(map[i][j] ==  FIRE_C) {		
+					c_fire.draw(mapDrawX, mapDrawY);
 				}
 				mapDrawX += mapOffsetX;
 			}
@@ -157,48 +179,210 @@ public class Play extends BasicGameState {
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
-		player1.move(input);
 		if(input.isKeyDown(Input.KEY_W)) {
 			player = moveUp;	// change sprite
-//			player1.setPos(player1.posX(), player1.posY() - OFFSET);
+			if(map[player1.mapIndexI()-1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BOMB) {
+				if(Math.abs(tempY - OFFSET) != MAP_OFFSET_Y) {	
+					tempY -= OFFSET;
+				} else {
+					tempY = 0;
+					player1.addToMapIndexI(-1);
+				}
+				player1.setPos(player1.posX(), player1.posY()-OFFSET);
+			}
 		} else if(input.isKeyDown(Input.KEY_S)) {
 			player = moveDown;	// change sprite
-//			player1.setPos(player1.posX(), player1.posY() + OFFSET);
+			if(map[player1.mapIndexI()+1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
+				if(Math.abs(tempY + OFFSET) != MAP_OFFSET_Y) {	
+					tempY += OFFSET;
+				} else {
+					tempY = 0;
+					player1.addToMapIndexI(1);
+				}
+				player1.setPos(player1.posX(), player1.posY()+OFFSET);
+			}
 		} else if(input.isKeyDown(Input.KEY_A)) {
 			player = moveLeft;	// change sprite
-//			player1.setPos(player1.posX() - OFFSET, player1.posY());
+			if(map[player1.mapIndexI()][player1.mapIndexJ()-1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()-1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
+				if(Math.abs(tempX - OFFSET) != MAP_OFFSET_X) {	
+					tempX -= OFFSET;
+				} else {
+					tempX = 0;
+					player1.addToMapIndexJ(-1);
+				}
+				player1.setPos(player1.posX()-OFFSET, player1.posY());
+			}
 		} else if(input.isKeyDown(Input.KEY_D)) {
 			player = moveRight;	// change sprite
-//			player1.setPos(player1.posX() + OFFSET, player1.posY());
-		} else if(input.isKeyDown(Input.KEY_SPACE)) {
-			map[player1.mapIndexI()][player1.mapIndexJ()] = BOMB;
-			// TODO: create bomb thread
-			// TODO: try passing this play class
-			Bomb bomb = new Bomb(3, map, player1.mapIndexI(), player1.mapIndexJ());
-			Thread bombThread = new Thread(bomb);
-			bombThread.start();
-//			bomb.draw(player1.posX(), player1.posY());
-		}
-		
-		mapDrawX = 90;
-		mapDrawY = 90;
-		
-		for(int i=0; i<map.length; i+=1) {
-			for(int j=0; j<map[i].length; j+=1) {
-				if(map[i][j] == GRASS ) {					
-					grass.draw(mapDrawX, mapDrawY);
-				} else if(map[i][j] == BRICK ) {			
-					brick.draw(mapDrawX, mapDrawY);
-				} else if(map[i][j] ==  BLOCK) {		
-					block.draw(mapDrawX, mapDrawY);
-				} else if(map[i][j] ==  BOMB) {		
-					bomb.draw(mapDrawX, mapDrawY);
+			if(map[player1.mapIndexI()][player1.mapIndexJ()+1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()+1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
+				if(Math.abs(tempX + OFFSET) != MAP_OFFSET_X) {	
+					tempX += OFFSET;
+				} else {
+					tempX = 0;
+					player1.addToMapIndexJ(1);
 				}
-				mapDrawX += mapOffsetX;
+				player1.setPos(player1.posX()+OFFSET, player1.posY());
 			}
-			mapDrawY += mapOffsetY;
-			mapDrawX = 90;
+		} else if(input.isKeyPressed(Input.KEY_SPACE) && map[player1.mapIndexI()][player1.mapIndexJ()] != BOMB) {
+			map[player1.mapIndexI()][player1.mapIndexJ()] = BOMB;
+			final Bomb bomb = new Bomb(3, player1.power(), player1.mapIndexI(), player1.mapIndexJ());
+			Thread bombThread = new Thread(bomb) {
+			    public void run() {
+			        try{
+			        	// bomb countdown
+			        	Thread.sleep(bomb.time()*1000);
+			        	// draw fires
+//			        	for(int x = (bomb.power()*-1); x <= bomb.power(); x+=1) {
+//							// vertical
+//							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+//								System.out.println(x);
+//								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+//									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
+//								} else {
+//									break;
+//								}
+//							}
+//							System.out.println("_");
+//							// horizontal
+//							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+//								System.out.println(x);
+//								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+//									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
+//								} else {
+//									break;
+//								}
+//							}
+//						}
+			        	for(int x = 0; x <= bomb.power(); x+=1) {
+							// vertical
+							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
+									if(map[bomb.mapI()+x][bomb.mapJ()] == BRICK) {
+										break;
+									}
+								} else {
+									break;
+								}
+							}
+							System.out.println("_");
+							// horizontal
+							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
+									if(map[bomb.mapI()][bomb.mapJ()+x] == BRICK) {
+										break;
+									}
+								} else {
+									break;
+								}
+							}
+						}
+			        	
+			        	for(int x = 0; x >= -bomb.power(); x-=1) {
+							// vertical
+							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
+								} else {
+									break;
+								}
+							}
+							System.out.println("_");
+							// horizontal
+							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
+								} else {
+									break;
+								}
+							}
+						}
+			        	
+			        	map[bomb.mapI()][bomb.mapJ()] = FIRE_C;
+			        	Thread.sleep(1000);
+			        	// reset to grass
+			        	for(int x = 0; x <= bomb.power(); x+=1) {
+							// vertical
+							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+									map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
+								} else {
+									break;
+								}
+							}
+							System.out.println("_");
+							// horizontal
+							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+									map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
+								} else {
+									break;
+								}
+							}
+						}
+			        	for(int x = 0; x >= -bomb.power(); x-=1) {
+							// vertical
+							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+									map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
+								} else {
+									break;
+								}
+							}
+							System.out.println("_");
+							// horizontal
+							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+								System.out.println(x);
+								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+									map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
+								} else {
+									break;
+								}
+							}
+						}
+			        	map[bomb.mapI()][bomb.mapJ()] = GRASS;
+			        	
+			        	this.interrupt();
+			        }catch(Exception e){
+			        	
+			        }
+			    }
+			};
+			bombThread.start();
+
 		}
+		
+//		mapDrawX = 90;
+//		mapDrawY = 90;
+		
+//		for(int i=0; i<map.length; i+=1) {
+//			for(int j=0; j<map[i].length; j+=1) {
+//				if(map[i][j] == GRASS ) {					
+//					grass.draw(mapDrawX, mapDrawY);
+//				} else if(map[i][j] == BRICK ) {			
+//					brick.draw(mapDrawX, mapDrawY);
+//				} else if(map[i][j] ==  BLOCK) {		
+//					block.draw(mapDrawX, mapDrawY);
+//				} else if(map[i][j] ==  BOMB) {		
+//					bomb.draw(mapDrawX, mapDrawY);
+//				} else if(map[i][j] ==  FIRE_H) {		
+//					h_fire.draw(mapDrawX, mapDrawY);
+//				} else if(map[i][j] ==  FIRE_V) {		
+//					v_fire.draw(mapDrawX, mapDrawY);
+//				}
+//				mapDrawX += mapOffsetX;
+//			}
+//			mapDrawY += mapOffsetY;
+//			mapDrawX = 90;
+//		}
 		
 
 	}

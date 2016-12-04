@@ -3,12 +3,12 @@ package javagame;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
-public class Game extends StateBasedGame {
+public final class Game extends StateBasedGame {
 	
 	public static final String gameName = "Bomberman";
 	public static final int menu = 0;
 	public static final int play = 1;
-	 
+	
 	public Game(String gameName) {
 		super(gameName);
 		this.addState(new Menu(menu));

@@ -6,36 +6,53 @@ public class Bomb implements Runnable {
 	static final int BRICK = 1;
 	static final int BLOCK = 2;
 	static final int BOMB = 3;
-	static final int FIRE = 4;
+	static final int FIRE_H = 4;
+	static final int FIRE_V = 5;
 	
 	static int NUM_OF_ROWS = 15;
 	static int NUM_OF_COLS = 21;
 	
-	int time;
-	int[][] map;
-	int mapI;
-	int mapJ;
+	private int time;
+//	int[][] map;
+	private int mapI;
+	private int mapJ;
+	private int power;
 	
-	public Bomb(int time, int[][] map, int mapI, int mapJ) {
+	public Bomb(int time, int power, int mapI, int mapJ) {
 		this.time = time;
-		this.map = new int[NUM_OF_ROWS][NUM_OF_COLS];
-		for(int i=0; i<NUM_OF_ROWS; i+=1) {
-			for(int j=0; j<NUM_OF_COLS; j+=1) {
-				this.map[i][j] = map[i][j];
-			}
-		}
 		this.mapI = mapI;
 		this.mapJ = mapJ;
+		this.power = power;
 	}
 	
-	public void run() {
-		try {
-			System.out.println("Bomb started...");
-			Thread.sleep(time*1000);
-			this.map[this.mapI][this.mapJ] = GRASS;
-			System.out.println("KABOOM!");
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+	public int mapI() {
+		return this.mapI;
 	}
+	
+	public int mapJ() {
+		return this.mapJ;
+	}
+	
+	public int time() {
+		return this.time;
+	}
+	
+	public int power() {
+		return this.power;
+	}
+	
+	private boolean isRunning;
+	
+	public void run() {
+		// no need
+	}
+    
+    public boolean isRunning(){
+        return this.isRunning;
+    }
+    
+    public void stop() {
+    	this.isRunning = false;
+    }
+
 }

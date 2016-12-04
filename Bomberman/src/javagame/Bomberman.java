@@ -12,14 +12,14 @@ public class Bomberman {
 	static final int BRICK = 1;
 	static final int BLOCK = 2;
 	static final int BOMB = 3;
-	static final int FIRE = 4;
-	static final int EDGE = 5;
+	static final int FIRE_H = 4;
+	static final int FIRE_V = 5;
 	
 	int[][] map = new int[NUM_OF_ROWS][NUM_OF_COLS];
 	
 	// starting canvas position
-	private int startPosX;
-	private int startPosY;
+//	private int startPosX;
+//	private int startPosY;
 	
 	// current canvas position
 	private int posX;
@@ -28,8 +28,7 @@ public class Bomberman {
 	// current corresponding map index coordinates
 	private int mapIndexI;
 	private int mapIndexJ;
-//	private Image img;
-	private int power = 1; 
+	private int power = 2; 
 	
 	public Bomberman(int startPosX, int startPosY, int mapIndexI, int mapIndexJ/*, Image img*/) {
 //		this.startPosX = startPosX;
@@ -49,7 +48,7 @@ public class Bomberman {
 	public void move(Input input) {
 //		Input input = gc.getInput();
 		if(input.isKeyDown(Input.KEY_W)) {			// UP
-			if(map[mapIndexI-1][mapIndexJ] != BRICK && map[mapIndexI-1][mapIndexJ] != BLOCK) {
+			if(map[mapIndexI-1][mapIndexJ] != BRICK && map[mapIndexI-1][mapIndexJ] != BLOCK && map[mapIndexI-1][mapIndexJ] != BOMB) {
 				if(Math.abs(this.tempY - OFFSET) != MAP_OFFSET_Y) {	
 					this.tempY -= OFFSET;
 				} else {
@@ -59,7 +58,7 @@ public class Bomberman {
 				this.posY -= OFFSET;
 			}
 		} else if(input.isKeyDown(Input.KEY_S)) {	// DOWN
-			if(map[mapIndexI+1][mapIndexJ] != BRICK && map[mapIndexI+1][mapIndexJ] != BLOCK) {
+			if(map[mapIndexI+1][mapIndexJ] != BRICK && map[mapIndexI+1][mapIndexJ] != BLOCK && map[mapIndexI+1][mapIndexJ] != BOMB) {
 				if(Math.abs(this.tempY + OFFSET) != MAP_OFFSET_Y) {	
 					this.tempY += OFFSET;
 				} else {
@@ -69,7 +68,7 @@ public class Bomberman {
 				this.posY += OFFSET;
 			}
 		} else if(input.isKeyDown(Input.KEY_A)) {	// LEFT
-			if(map[mapIndexI][mapIndexJ-1] != BRICK && map[mapIndexI][mapIndexJ-1] != BLOCK) {
+			if(map[mapIndexI][mapIndexJ-1] != BRICK && map[mapIndexI][mapIndexJ-1] != BLOCK && map[mapIndexI+1][mapIndexJ] != BOMB) {
 				if(Math.abs(this.tempX - OFFSET) != MAP_OFFSET_X) {	
 					this.tempX -= OFFSET;
 				} else {
@@ -79,7 +78,7 @@ public class Bomberman {
 				this.posX -= OFFSET;
 			}
 		} else if(input.isKeyDown(Input.KEY_D)) {	// RIGHT
-			if(map[mapIndexI][mapIndexJ+1] != BRICK && map[mapIndexI][mapIndexJ+1] != BLOCK) {
+			if(map[mapIndexI][mapIndexJ+1] != BRICK && map[mapIndexI][mapIndexJ+1] != BLOCK && map[mapIndexI+1][mapIndexJ] != BOMB) {
 				if(Math.abs(this.tempX + OFFSET) != MAP_OFFSET_X) {	
 					this.tempX += OFFSET;
 				} else {
@@ -114,13 +113,21 @@ public class Bomberman {
 		return this.mapIndexJ;
 	}
 	
-//	public Image img() {
-//		return this.img;
-//	}
+	public int power() {
+		return this.power;
+	}
 
 	public void setPos(int posX, int posY) {
 		this.posX = posX;
 		this.posY = posY;
+	}
+	
+	public void addToMapIndexI(int x) {
+		this.mapIndexI += x;
+	}
+	
+	public void addToMapIndexJ(int x) {
+		this.mapIndexJ += x;
 	}
 	
 	public void setMap(int[][] map) {
