@@ -29,6 +29,7 @@ public class Bomberman {
 	private int mapIndexI;
 	private int mapIndexJ;
 	private int power = 2; 
+	private boolean alive = true;
 	
 	public Bomberman(int startPosX, int startPosY, int mapIndexI, int mapIndexJ/*, Image img*/) {
 //		this.startPosX = startPosX;
@@ -128,6 +129,14 @@ public class Bomberman {
 	
 	public void addToMapIndexJ(int x) {
 		this.mapIndexJ += x;
+	}
+	
+	public void setAlive(boolean alive) {
+		this.alive = alive;
+	}
+	
+	public boolean alive() {
+		return this.alive;
 	}
 	
 	public void setMap(int[][] map) {

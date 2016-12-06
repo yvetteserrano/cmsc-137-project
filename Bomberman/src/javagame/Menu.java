@@ -13,8 +13,10 @@ public class Menu extends BasicGameState {
 	// 2 - 
 	
 	TextField nicknameField;
+	TextField serverField;
 	
 	static String nickname;
+	static String serverName;
 	
 	public Menu(int state) {
 		
@@ -28,6 +30,13 @@ public class Menu extends BasicGameState {
 		});
 		nicknameField.setFocus(true);
 		
+		serverField = new TextField(gc, gc.getDefaultFont(), 300, 300, 100, 30, new ComponentListener() {
+			public void componentActivated(AbstractComponent source) {
+				serverField.setFocus(true);
+			}
+		});
+		serverField.setFocus(true);
+		
 	}
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -36,7 +45,10 @@ public class Menu extends BasicGameState {
 		g.drawString("Press F1 to submit nickname and play game", 200, 180);
 		g.drawString("Nickname", 200, 250);
 		nicknameField.render(gc, g);
-		g.drawString("Press F2 if textbox loses focus", 200, 380);
+		g.drawString("Server", 200, 300);
+		serverField.render(gc, g);
+		
+		g.drawString("Press F2 to input nickname, F3 to input server", 200, 450);
 		
 		
 	}
@@ -45,6 +57,8 @@ public class Menu extends BasicGameState {
 		Input input = gc.getInput();
 		if(input.isKeyDown(Input.KEY_F1)) {
 			nickname = nicknameField.getText();
+//			serverName = serverField.getText();
+			serverName = "localhost";
 			System.out.println(nickname);
 			sbg.enterState(1);
 		} else if(input.isKeyDown(Input.KEY_F2)) {
@@ -52,6 +66,12 @@ public class Menu extends BasicGameState {
 				nicknameField.setFocus(false);
 			} else {
 				nicknameField.setFocus(true);
+			}
+		} else if(input.isKeyDown(Input.KEY_F3)) {
+			if(serverField.hasFocus()) {
+				serverField.setFocus(false);
+			} else {
+				serverField.setFocus(true);
 			}
 		}
 	}

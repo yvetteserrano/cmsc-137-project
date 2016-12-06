@@ -146,16 +146,16 @@ public class GreetingServer extends Thread {
 			}
 		} 
 	}
-//	public static void main(String [] args) {
-//		try {
+	public static void main() {
+		try {
 //			int port = Integer.parseInt(args[0]);
-//			Thread t = new GreetingServer(port);
-//			t.start();
-//		}catch(IOException e) {
-//			//e.printStackTrace();
-//			System.out.println("Usage: java GreetingServer <port no.>");
-//		}catch(ArrayIndexOutOfBoundsException e) {
-//			System.out.println("Usage: java GreetingServer <port no.> ");
-//		}
-//	}
+			Thread t = new GreetingServer(9999);
+			t.start();
+		}catch(IOException e) {
+			//e.printStackTrace();
+			System.out.println("Usage: java GreetingServer <port no.>");
+		}catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("Usage: java GreetingServer <port no.> ");
+		}
+	}
 }

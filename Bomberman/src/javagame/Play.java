@@ -23,13 +23,14 @@ public class Play extends BasicGameState {
 	Image h_fire;
 	Image v_fire;
 	Image c_fire;
+	Image dead;
 	
 	int mapDrawX = 90;
 	int mapDrawY = 90;
 	int mapOffsetX = 30;
 	int mapOffsetY = 30;
 	
-	public boolean ALIVE = true;
+//	public boolean ALIVE = true;
 	
 	public static int MAP_OFFSET_X = 30;
 	public static int MAP_OFFSET_Y = 30;
@@ -38,6 +39,7 @@ public class Play extends BasicGameState {
 	public static int OFFSET = 2;
 	public static final int ORIGIN = 90;
 	
+	public static final int PLAYER = -1;
 	public static final int GRASS = 0;
 	public static final int BRICK = 1;
 	public static final int BLOCK = 2;
@@ -45,11 +47,14 @@ public class Play extends BasicGameState {
 	public static final int FIRE_H = 4;
 	public static final int FIRE_V = 5;
 	public static final int FIRE_C = 6;
+	public static final int DEAD = 6;
 	
 	public static int NUM_OF_ROWS = 15;
 	public static int NUM_OF_COLS = 21;
 	
 	public int[][] map;
+	
+	public static String message;
 	
 	int tempX = 0;
 	int tempY = 0;
@@ -80,7 +85,9 @@ public class Play extends BasicGameState {
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		
-		field = new TextField(gc, gc.getDefaultFont(), 60, 550, 120, 60, new ComponentListener() {
+//		Game.createClient(Menu.serverName, 9999, Menu.nickname);
+		
+		field = new TextField(gc, gc.getDefaultFont(), 90, 550, 850, 60, new ComponentListener() {
 			public void componentActivated(AbstractComponent source) {
 //				String message = "Entered1: "+field.getText();
 				field.setFocus(true);
@@ -89,7 +96,7 @@ public class Play extends BasicGameState {
 		});
 		
 		
-		
+		field.setBorderColor(Color.white);
 //		field.setBackgroundColor(Color.white);
 //		field.setTextColor(Color.black);
 		
@@ -101,6 +108,7 @@ public class Play extends BasicGameState {
 		h_fire = new Image("res/fire-h.png");
 		v_fire = new Image("res/fire-v.png");
 		c_fire = new Image("res/fire.png");
+		dead = new Image("res/dead.png");
 		
 		Image p1F = new Image("res/p1-front.png");
 		Image p1B = new Image("res/p1-back.png");
@@ -160,8 +168,8 @@ public class Play extends BasicGameState {
 			}
 		}
 		// after creating the map int array, pass it to all players
-		player1.setMap(map);
-		
+//		player1.setMap(map);
+		map[player1.mapIndexI()][player1.mapIndexJ()] = PLAYER;
 		
 		
 	}
@@ -175,7 +183,7 @@ public class Play extends BasicGameState {
 		
 		for(int i=0; i<map.length; i+=1) {
 			for(int j=0; j<map[i].length; j+=1) {
-				if(map[i][j] == GRASS ) {					
+				if(map[i][j] == GRASS || map[i][j] == PLAYER) {					
 					grass.draw(mapDrawX, mapDrawY);
 				} else if(map[i][j] == BRICK ) {			
 					brick.draw(mapDrawX, mapDrawY);
@@ -189,6 +197,8 @@ public class Play extends BasicGameState {
 					v_fire.draw(mapDrawX, mapDrawY);
 				} else if(map[i][j] ==  FIRE_C) {		
 					c_fire.draw(mapDrawX, mapDrawY);
+				} else if(map[i][j] ==  DEAD) {		
+					c_fire.draw(mapDrawX, mapDrawY);
 				}
 				mapDrawX += mapOffsetX;
 			}
@@ -197,185 +207,213 @@ public class Play extends BasicGameState {
 		}
 		
 		player.draw(player1.posX(), player1.posY());
+		
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
-		if(input.isKeyDown(Input.KEY_UP)) {
-			player = moveUp;	// change sprite
-			if(map[player1.mapIndexI()-1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BOMB) {
-				if(Math.abs(tempY - OFFSET) != MAP_OFFSET_Y) {	
-					tempY -= OFFSET;
-				} else {
-					tempY = 0;
-					player1.addToMapIndexI(-1);
+		
+		if(player1.alive()) {
+			if(input.isKeyDown(Input.KEY_UP)) {
+				player = moveUp;	// change sprite
+				if(map[player1.mapIndexI()-1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BOMB) {
+					if(Math.abs(tempY - OFFSET) != MAP_OFFSET_Y) {	
+						tempY -= OFFSET;
+					} else {
+						tempY = 0;
+						player1.addToMapIndexI(-1);
+					}
+					player1.setPos(player1.posX(), player1.posY()-OFFSET);
 				}
-				player1.setPos(player1.posX(), player1.posY()-OFFSET);
-			}
-		} else if(input.isKeyDown(Input.KEY_DOWN)) {
-			player = moveDown;	// change sprite
-			if(map[player1.mapIndexI()+1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
-				if(Math.abs(tempY + OFFSET) != MAP_OFFSET_Y) {	
-					tempY += OFFSET;
-				} else {
-					tempY = 0;
-					player1.addToMapIndexI(1);
+			} else if(input.isKeyDown(Input.KEY_DOWN)) {
+				player = moveDown;	// change sprite
+				if(map[player1.mapIndexI()+1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
+					if(Math.abs(tempY + OFFSET) != MAP_OFFSET_Y) {	
+						tempY += OFFSET;
+					} else {
+						tempY = 0;
+						player1.addToMapIndexI(1);
+					}
+					player1.setPos(player1.posX(), player1.posY()+OFFSET);
 				}
-				player1.setPos(player1.posX(), player1.posY()+OFFSET);
-			}
-		} else if(input.isKeyDown(Input.KEY_LEFT)) {
-			player = moveLeft;	// change sprite
-			if(map[player1.mapIndexI()][player1.mapIndexJ()-1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()-1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
-				if(Math.abs(tempX - OFFSET) != MAP_OFFSET_X) {	
-					tempX -= OFFSET;
-				} else {
-					tempX = 0;
-					player1.addToMapIndexJ(-1);
+			} else if(input.isKeyDown(Input.KEY_LEFT)) {
+				player = moveLeft;	// change sprite
+				if(map[player1.mapIndexI()][player1.mapIndexJ()-1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()-1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
+					if(Math.abs(tempX - OFFSET) != MAP_OFFSET_X) {	
+						tempX -= OFFSET;
+					} else {
+						tempX = 0;
+						player1.addToMapIndexJ(-1);
+					}
+					player1.setPos(player1.posX()-OFFSET, player1.posY());
 				}
-				player1.setPos(player1.posX()-OFFSET, player1.posY());
-			}
-		} else if(input.isKeyDown(Input.KEY_RIGHT)) {
-			player = moveRight;	// change sprite
-			if(map[player1.mapIndexI()][player1.mapIndexJ()+1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()+1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
-				if(Math.abs(tempX + OFFSET) != MAP_OFFSET_X) {	
-					tempX += OFFSET;
-				} else {
-					tempX = 0;
-					player1.addToMapIndexJ(1);
+			} else if(input.isKeyDown(Input.KEY_RIGHT)) {
+				player = moveRight;	// change sprite
+				if(map[player1.mapIndexI()][player1.mapIndexJ()+1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()+1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
+					if(Math.abs(tempX + OFFSET) != MAP_OFFSET_X) {	
+						tempX += OFFSET;
+					} else {
+						tempX = 0;
+						player1.addToMapIndexJ(1);
+					}
+					player1.setPos(player1.posX()+OFFSET, player1.posY());
 				}
-				player1.setPos(player1.posX()+OFFSET, player1.posY());
-			}
-		} else if((input.isKeyPressed(Input.KEY_LSHIFT) || input.isKeyPressed(Input.KEY_RSHIFT)) && map[player1.mapIndexI()][player1.mapIndexJ()] != BOMB) {
-			map[player1.mapIndexI()][player1.mapIndexJ()] = BOMB;
-			final Bomb bomb = new Bomb(3, player1.power(), player1.mapIndexI(), player1.mapIndexJ());
-			Thread bombThread = new Thread(bomb) {
-			    public void run() {
-			        try{
-			        	// bomb countdown
-			        	Thread.sleep(bomb.time()*1000);
-			        	// draw fires
-//			        	for(int x = (bomb.power()*-1); x <= bomb.power(); x+=1) {
-//							// vertical
-//							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-//								System.out.println(x);
-//								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
-//									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
-//								} else {
-//									break;
-//								}
-//							}
-//							System.out.println("_");
-//							// horizontal
-//							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-//								System.out.println(x);
-//								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
-//									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
-//								} else {
-//									break;
-//								}
-//							}
-//						}
-			        	for(int x = 0; x <= bomb.power(); x+=1) {
-							// vertical
-							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
-									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
-									if(map[bomb.mapI()+x][bomb.mapJ()] == BRICK) {
+			} else if((input.isKeyPressed(Input.KEY_LSHIFT) || input.isKeyPressed(Input.KEY_RSHIFT)) && map[player1.mapIndexI()][player1.mapIndexJ()] != BOMB) {
+				map[player1.mapIndexI()][player1.mapIndexJ()] = BOMB;
+				final Bomb bomb = new Bomb(3, player1.power(), player1.mapIndexI(), player1.mapIndexJ());
+				Thread bombThread = new Thread(bomb) {
+				    public void run() {
+				        try{
+				        	// bomb countdown
+				        	Thread.sleep(bomb.time()*1000);
+				        	// draw fires
+	//			        	for(int x = (bomb.power()*-1); x <= bomb.power(); x+=1) {
+	//							// vertical
+	//							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+	//								System.out.println(x);
+	//								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+	//									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
+	//								} else {
+	//									break;
+	//								}
+	//							}
+	//							System.out.println("_");
+	//							// horizontal
+	//							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+	//								System.out.println(x);
+	//								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+	//									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
+	//								} else {
+	//									break;
+	//								}
+	//							}
+	//						}
+				        	for(int x = 0; x <= bomb.power(); x+=1) {
+								// vertical
+								if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+									if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+										map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
+										if(bomb.mapI()+x == player1.mapIndexI() && bomb.mapJ() == player1.mapIndexJ()) {
+											System.out.println("DEAD");
+											player1.setAlive(false);
+										}
+										if(map[bomb.mapI()+x][bomb.mapJ()] == BRICK) {
+											break;
+										}
+									} else {
 										break;
 									}
-								} else {
-									break;
 								}
-							}
-							// horizontal
-							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
-									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
-									if(map[bomb.mapI()][bomb.mapJ()+x] == BRICK) {
+								// horizontal
+								if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+									if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+										map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
+										if(bomb.mapI() == player1.mapIndexI() && bomb.mapJ()+x == player1.mapIndexJ()) {
+											System.out.println("DEAD");
+											player1.setAlive(false);
+										}
+										if(map[bomb.mapI()][bomb.mapJ()+x] == BRICK) {
+											break;
+										}
+									} else {
 										break;
 									}
-								} else {
-									break;
 								}
 							}
-						}
-			        	
-			        	for(int x = 0; x >= -bomb.power(); x-=1) {
-							// vertical
-							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-								System.out.println(x);
-								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
-									map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
-								} else {
-									break;
+				        	
+				        	for(int x = 0; x >= -bomb.power(); x-=1) {
+								// vertical
+								if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+									if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+										map[bomb.mapI()+x][bomb.mapJ()] = FIRE_V;
+										if(bomb.mapI()+x == player1.mapIndexI() && bomb.mapJ() == player1.mapIndexJ()) {
+											System.out.println("DEAD");
+											player1.setAlive(false);
+										}
+										if(map[bomb.mapI()+x][bomb.mapJ()] == BRICK) {
+											break;
+										}
+									} else {
+										break;
+									}
+								}
+								// horizontal
+								if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+									if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+										map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
+										if(bomb.mapI() == player1.mapIndexI() && bomb.mapJ()+x == player1.mapIndexJ()) {
+											System.out.println("DEAD");
+											player1.setAlive(false);
+										}
+										if(map[bomb.mapI()][bomb.mapJ()+x] == BRICK) {
+											break;
+										}
+									} else {
+										break;
+									}
 								}
 							}
-							// horizontal
-							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-								System.out.println(x);
-								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
-									map[bomb.mapI()][bomb.mapJ()+x] = FIRE_H;
-								} else {
-									break;
+				        	
+				        	map[bomb.mapI()][bomb.mapJ()] = FIRE_C;
+				        	Thread.sleep(1000);
+				        	// reset to grass
+				        	for(int x = 0; x <= bomb.power(); x+=1) {
+								// vertical
+								if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+									if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+										map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
+									} else {
+										break;
+									}
+								}
+								// horizontal
+								if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+									if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+										map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
+									} else {
+										break;
+									}
 								}
 							}
-						}
-			        	
-			        	map[bomb.mapI()][bomb.mapJ()] = FIRE_C;
-			        	Thread.sleep(1000);
-			        	// reset to grass
-			        	for(int x = 0; x <= bomb.power(); x+=1) {
-							// vertical
-							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
-									map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
-								} else {
-									break;
+				        	for(int x = 0; x >= -bomb.power(); x-=1) {
+								// vertical
+								if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
+									if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
+										map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
+									} else {
+										break;
+									}
+								}
+								// horizontal
+								if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
+									if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
+										map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
+									} else {
+										break;
+									}
 								}
 							}
-							System.out.println("_");
-							// horizontal
-							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
-									map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
-								} else {
-									break;
-								}
-							}
-						}
-			        	for(int x = 0; x >= -bomb.power(); x-=1) {
-							// vertical
-							if(bomb.mapI()+x > 0 && bomb.mapI()+x < NUM_OF_ROWS-1) {
-								if(map[bomb.mapI()+x][bomb.mapJ()] != BLOCK) {
-									map[bomb.mapI()+x][bomb.mapJ()] = GRASS;
-								} else {
-									break;
-								}
-							}
-							// horizontal
-							if(bomb.mapJ()+x > 0 && bomb.mapJ()+x < NUM_OF_COLS-1) {
-								if(map[bomb.mapI()][bomb.mapJ()+x] != BLOCK) {
-									map[bomb.mapI()][bomb.mapJ()+x] = GRASS;
-								} else {
-									break;
-								}
-							}
-						}
-			        	map[bomb.mapI()][bomb.mapJ()] = GRASS;
-			        	
-			        	this.interrupt();
-			        }catch(Exception e){
-			        	
-			        }
-			    }
-			};
-			bombThread.start();
-
-		} else if(input.isKeyDown(Input.KEY_ENTER)) {
-			if(field.hasFocus()) {
-				field.setFocus(false);
-			} else {
-				field.setFocus(true);
+				        	map[bomb.mapI()][bomb.mapJ()] = GRASS;
+				        	
+				        	this.interrupt();
+				        }catch(Exception e){
+				        	
+				        }
+				    }
+				};
+				bombThread.start();
+	
+			} else if(input.isKeyPressed(Input.KEY_ENTER)) {
+				if(field.hasFocus()) {
+					
+					message = field.getText();
+					field.setText("");
+					field.setFocus(false);
+					System.out.println(Menu.nickname + ": " + message);
+	//				message = null;
+				} else {
+					field.setFocus(true);
+				}
 			}
 		}
 		

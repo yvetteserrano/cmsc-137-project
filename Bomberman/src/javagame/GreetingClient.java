@@ -20,17 +20,22 @@ public class GreetingClient {
 			
 			System.out.println("Sender started");
 			
-			DataInputStream in;
+//			DataInputStream in;
 			DataOutputStream out;
 			String message;
-			Scanner scanner = new Scanner(System.in);
+//			Scanner scanner = new Scanner(System.in);
 			try{
 				
 				while(true) {
-					System.out.print("Message: ");
-					message = "";
-					while(message.equals("")) {
-						message = scanner.nextLine();
+//					System.out.print("Message: ");
+					message = null;
+					while(message != null) {
+//						message = scanner.nextLine();
+						if(Play.message != "" && Play.message != null) {
+							message = Play.message;
+							System.out.println(message);
+							break;
+						}
 					}
 					//~ System.out.println(scanner.nextLine());
 					if(message == "/exit") {
@@ -40,8 +45,11 @@ public class GreetingClient {
 						break;
 					}
 					/* Send data to the ServerSocket */
-					out = new DataOutputStream(clientSocket.getOutputStream());
-					out.writeUTF(clientSocket.getLocalSocketAddress()+"`"+nickname+"`"+message);
+					if(message != null && message != "") {
+						out = new DataOutputStream(clientSocket.getOutputStream());
+						out.writeUTF(clientSocket.getLocalSocketAddress()+"`"+nickname+"`"+message);
+					}
+//					message = null;
 				}
 				
 			}catch(IOException e) {
@@ -63,9 +71,9 @@ public class GreetingClient {
 			System.out.println("Fetcher started");
 			
 			DataInputStream in;
-			DataOutputStream out;
-			String message;
-			Scanner scanner = new Scanner(System.in);
+//			DataOutputStream out;
+//			String message;
+//			Scanner scanner = new Scanner(System.in);
 			try{
 				
 				while(true) {
@@ -113,12 +121,12 @@ public class GreetingClient {
 			
 			
 			 //insert missing line for closing the socket from the client side - client.close()
-			}catch(IOException e) {
-				//e.printStackTrace();
-				System.out.println("Cannot find Server");
-			}catch(ArrayIndexOutOfBoundsException e) {
-				System.out.println("Usage: java GreetingClient <server ip> <port no.> '<nickname>'");
-			}
+		}catch(IOException e) {
+			//e.printStackTrace();
+			System.out.println("Cannot find Server");
+		}catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("Usage: java GreetingClient <server ip> <port no.> '<nickname>'");
+		}
 	}
 }
 
