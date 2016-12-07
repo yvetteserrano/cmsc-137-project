@@ -1,6 +1,7 @@
 package javagame;
 
 import java.util.Random;
+import java.util.ArrayList;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
@@ -56,6 +57,8 @@ public class Play extends BasicGameState {
 	
 	public static String message;
 	
+	public static ArrayList<String> messages = new ArrayList<String>();
+	
 	int tempX = 0;
 	int tempY = 0;
 	
@@ -72,6 +75,7 @@ public class Play extends BasicGameState {
 	Animation moveRight;
 	
 	TextField field;
+	TextField feed;
 	
 	int[] duration = {200, 200};
 	
@@ -93,6 +97,13 @@ public class Play extends BasicGameState {
 			}
 		});
 		
+		feed = new TextField(gc, gc.getDefaultFont(), 750, 90, 200, 440, new ComponentListener() {
+			public void componentActivated(AbstractComponent source) {
+//				String message = "Entered1: "+field.getText();
+				feed.setFocus(false);
+				
+			}
+		});
 		
 		field.setBorderColor(Color.white);
 //		field.setBackgroundColor(Color.white);
@@ -169,13 +180,13 @@ public class Play extends BasicGameState {
 //		player1.setMap(map);
 		map[player1.mapIndexI()][player1.mapIndexJ()] = PLAYER;
 		
-		
 	}
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		
 		g.drawString(Menu.nickname, 60, 30);
 		field.render(gc, g);
+		feed.render(gc, g);
 		mapDrawX = 90;
 		mapDrawY = 90;
 		
@@ -420,7 +431,14 @@ public class Play extends BasicGameState {
 			}
 		}
 		
+		if(messages.size() == 7) {
+			messages.remove(0);
+		}
 		
+		feed.setText("");
+		for(int z=0; z<messages.size(); z+=1) {
+			feed.setText(feed.getText() + "\n" +  messages.get(z));
+		}
 		
 //		mapDrawX = 90;
 //		mapDrawY = 90;

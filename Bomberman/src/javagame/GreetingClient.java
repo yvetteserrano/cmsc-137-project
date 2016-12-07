@@ -33,9 +33,12 @@ public class GreetingClient {
 					while(true) {
 //						message = scanner.nextLine();
 //						System.out.println(message + " v " + prevMsg);
-						System.out.println(Play.message + " null pa rin");
+						try {
+							// necessary delay idk why
+							Thread.sleep(10);
+						} catch(Exception e){}
+//						System.out.println();
 						if(Play.message != null) {	// if current message == previous message, get a new msg
-							System.out.println("joo");
 							
 							message = Play.message;
 							
@@ -56,6 +59,14 @@ public class GreetingClient {
 					if(Play.message != null) {
 						out = new DataOutputStream(clientSocket.getOutputStream());
 						out.writeUTF(clientSocket.getLocalSocketAddress()+"`"+nickname+"`"+message);
+						String temp = nickname+": "+message;
+						if(temp.length() >= 22) {
+							Play.messages.add(temp.substring(0, 21));	//chat box
+							Play.messages.add(temp.substring(21));	//chat box
+						} else {
+							Play.messages.add(temp);	//chat box
+						}
+						
 //						message = null;
 						prevMsg = message;
 						Play.message = null;
