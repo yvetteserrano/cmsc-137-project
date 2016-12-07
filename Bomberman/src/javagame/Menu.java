@@ -48,31 +48,36 @@ public class Menu extends BasicGameState {
 		g.drawString("Server", 200, 300);
 		serverField.render(gc, g);
 		
-		g.drawString("Press F2 to input nickname, F3 to input server", 200, 450);
+		g.drawString("Press F2 to input nickname, F3 to input server, F4 for instructions", 200, 450);
 		
 		
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
-		if(input.isKeyDown(Input.KEY_F1)) {
+		if(input.isKeyPressed(Input.KEY_F1)) {
 			nickname = nicknameField.getText();
 //			serverName = serverField.getText();
 			serverName = "localhost";
 			System.out.println(nickname);
+			input.clearKeyPressedRecord();
+			Game.createClient(Menu.serverName, 9999, Menu.nickname);
 			sbg.enterState(1);
-		} else if(input.isKeyDown(Input.KEY_F2)) {
+		} else if(input.isKeyPressed(Input.KEY_F2)) {
 			if(nicknameField.hasFocus()) {
 				nicknameField.setFocus(false);
 			} else {
 				nicknameField.setFocus(true);
 			}
-		} else if(input.isKeyDown(Input.KEY_F3)) {
+		} else if(input.isKeyPressed(Input.KEY_F3)) {
 			if(serverField.hasFocus()) {
 				serverField.setFocus(false);
 			} else {
 				serverField.setFocus(true);
 			}
+		} else if(input.isKeyPressed(Input.KEY_F4)) {
+			input.clearKeyPressedRecord();
+			sbg.enterState(2);
 		}
 	}
 	

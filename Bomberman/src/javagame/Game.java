@@ -22,17 +22,20 @@ public final class Game extends StateBasedGame {
 	public static final String gameName = "Bomberman";
 	public static final int menu = 0;
 	public static final int play = 1;
+	public static final int instructions = 2;
 	
 	public Game(String gameName) {
 		super(gameName);
 		this.addState(new Menu(menu));
 		this.addState(new Play(play));
+		this.addState(new Instructions(instructions));
 	}
 	
 	public void initStatesList(GameContainer gameContainer) throws SlickException {
 		// GameContainer manages game loop, frame rate, behind the scene stuff
 		this.getState(menu).init(gameContainer, this);
 		this.getState(play).init(gameContainer, this);
+		this.getState(instructions).init(gameContainer, this);
 		
 		//redirect to menu state
 		this.enterState(menu);
@@ -57,8 +60,13 @@ public final class Game extends StateBasedGame {
 //			}catch(ArrayIndexOutOfBoundsException e) {
 //				System.out.println("Usage: java GreetingServer <port no.> ");
 //			}
-			
-			
+//			try {
+//				GreetingServer server = new GreetingServer(9999);
+//				server.start();
+//				System.out.println("Server started.");
+//			}catch(IOException e) {
+//				
+//			}
 			
 			appGC.start();
 		} catch(SlickException e) {

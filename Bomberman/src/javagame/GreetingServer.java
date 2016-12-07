@@ -50,7 +50,6 @@ public class GreetingServer extends Thread {
 					/* Read data from the ClientSocket */
 					//in = new DataInputStream(clientSocket.getInputStream());
 					//System.out.println(">"+in.readUTF());
-					
 					ArrayList<String> clientAddresses = new ArrayList<String>();
 					ArrayList<String> nicknames = new ArrayList<String>();
 					ArrayList<String> messages = new ArrayList<String>();
@@ -65,7 +64,7 @@ public class GreetingServer extends Thread {
 							clientAddresses.add(tokens[0]);
 							nicknames.add(tokens[1]);
 							messages.add(tokens[2]);
-							System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
+							System.out.println("?> " + tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
 						} else {
 							continue;
 						}

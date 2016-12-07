@@ -22,21 +22,28 @@ public class GreetingClient {
 			
 //			DataInputStream in;
 			DataOutputStream out;
-			String message;
+			String message = "/";
+			String prevMsg = Play.message;
 //			Scanner scanner = new Scanner(System.in);
 			try{
 				
 				while(true) {
 //					System.out.print("Message: ");
-					message = null;
-					while(message != null) {
+//					message = null;
+					while(true) {
 //						message = scanner.nextLine();
-						if(Play.message != "" && Play.message != null) {
+//						System.out.println(message + " v " + prevMsg);
+						System.out.println(Play.message + " null pa rin");
+						if(Play.message != null) {	// if current message == previous message, get a new msg
+							System.out.println("joo");
+							
 							message = Play.message;
-							System.out.println(message);
+							
+//							System.out.println(">>>>>>>>"+message);
 							break;
 						}
 					}
+					
 					//~ System.out.println(scanner.nextLine());
 					if(message == "/exit") {
 						System.out.println("exit");
@@ -45,9 +52,13 @@ public class GreetingClient {
 						break;
 					}
 					/* Send data to the ServerSocket */
-					if(message != null && message != "") {
+//					if(message != null && message != "") {
+					if(Play.message != null) {
 						out = new DataOutputStream(clientSocket.getOutputStream());
 						out.writeUTF(clientSocket.getLocalSocketAddress()+"`"+nickname+"`"+message);
+//						message = null;
+						prevMsg = message;
+						Play.message = null;
 					}
 //					message = null;
 				}
