@@ -81,10 +81,10 @@ public class Menu extends BasicGameState {
 				sendData = initialMsg.getBytes();
 				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIPAddress, serverPortNumber);
 				clientSocket.send(sendPacket);
-				
+
 				
 				//receive reply
-				DatagramSocket clientSocket2 = new DatagramSocket();
+//				DatagramSocket clientSocket2 = new DatagramSocket();
 				int dataLength = 100;
 				byte[] receiveData = new byte[dataLength];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -92,15 +92,14 @@ public class Menu extends BasicGameState {
 				System.out.println("asdfghjkl");
 				
 				// receive a message via clientSocket
-		//		clientSocket2.receive(receivePacket);
-				// Di umaabot dito. TODO: Fix.
-		//		System.out.println("asdfghjkl2");
+				clientSocket.receive(receivePacket);
+				System.out.println("asdfghjkl2");
 				InetAddress IPAddress = receivePacket.getAddress();
-		//		int serverPort = receivePacket.getPort();
-		//		String str = new String(receivePacket.getData());
+				int serverPort = receivePacket.getPort();
+				String str = new String(receivePacket.getData());
 				
-		//		str = str.trim();
-		//		System.out.println(str + "received.");
+				str = str.trim();
+				System.out.println(str + "received.");
 				
 			} catch(IOException e) {
 				e.printStackTrace();
