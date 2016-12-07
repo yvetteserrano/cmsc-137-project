@@ -85,6 +85,8 @@ public class Play extends BasicGameState {
 	int[] duration = {200, 200};
 	
 	
+	
+//	Bomberman player1;
 	Bomberman player1 = new Bomberman(120, 120, 1, 1);
 //	Bomberman player1 = new Bomberman(660, 480, 13, 19);
 //	public static Play play = new Play(1);
@@ -98,6 +100,10 @@ public class Play extends BasicGameState {
 	}
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		
+		
+//		String[] b = Menu.bombermanInfo.split(",");
+//		player1 = new Bomberman(Integer.parseInt(b[0]), Integer.parseInt(b[1]), Integer.parseInt(b[2]), Integer.parseInt(b[3]));
 		
 		try {
 			serverIPAddress = null;
@@ -243,49 +249,49 @@ public class Play extends BasicGameState {
 				player = moveUp;	// change sprite
 				if(map[player1.mapIndexI()-1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()-1][player1.mapIndexJ()] != BOMB) {
 					if(Math.abs(tempY - OFFSET) != MAP_OFFSET_Y) {	
-						player1.setPos(player1.posX(), player1.posY()-OFFSET);
+						
 						tempY -= OFFSET;
 					} else {
 						tempY = 0;
 						player1.addToMapIndexI(-1);
 					}
-					
+					player1.setPos(player1.posX(), player1.posY()-OFFSET);
 				}
 			} else if(input.isKeyDown(Input.KEY_DOWN)) {
 				player = moveDown;	// change sprite
 				if(map[player1.mapIndexI()+1][player1.mapIndexJ()] != BRICK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
 					if(Math.abs(tempY + OFFSET) != MAP_OFFSET_Y) {	
-						player1.setPos(player1.posX(), player1.posY()+OFFSET);
+						
 						tempY += OFFSET;
 					} else {
 						tempY = 0;
 						player1.addToMapIndexI(1);
 					}
-					
+					player1.setPos(player1.posX(), player1.posY()+OFFSET);
 				}
 			} else if(input.isKeyDown(Input.KEY_LEFT)) {
 				player = moveLeft;	// change sprite
 				if(map[player1.mapIndexI()][player1.mapIndexJ()-1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()-1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
 					if(Math.abs(tempX - OFFSET) != MAP_OFFSET_X) {	
-						player1.setPos(player1.posX()-OFFSET, player1.posY());
+						
 						tempX -= OFFSET;
 					} else {
 						tempX = 0;
 						player1.addToMapIndexJ(-1);
 					}
-					
+					player1.setPos(player1.posX()-OFFSET, player1.posY());
 				}
 			} else if(input.isKeyDown(Input.KEY_RIGHT)) {
 				player = moveRight;	// change sprite
 				if(map[player1.mapIndexI()][player1.mapIndexJ()+1] != BRICK && map[player1.mapIndexI()][player1.mapIndexJ()+1] != BLOCK && map[player1.mapIndexI()+1][player1.mapIndexJ()] != BOMB) {
 					if(Math.abs(tempX + OFFSET) != MAP_OFFSET_X) {	
-						player1.setPos(player1.posX()+OFFSET, player1.posY());
+						
 						tempX += OFFSET;
 					} else {
 						tempX = 0;
 						player1.addToMapIndexJ(1);
 					}
-					
+					player1.setPos(player1.posX()+OFFSET, player1.posY());
 				}
 			} else if((input.isKeyPressed(Input.KEY_LSHIFT) || input.isKeyPressed(Input.KEY_RSHIFT)) && map[player1.mapIndexI()][player1.mapIndexJ()] != BOMB) {
 				map[player1.mapIndexI()][player1.mapIndexJ()] = BOMB;

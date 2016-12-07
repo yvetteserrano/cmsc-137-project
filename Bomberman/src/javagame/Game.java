@@ -39,6 +39,8 @@ public final class Game extends StateBasedGame {
 		
 		//redirect to menu state
 		this.enterState(menu);
+		
+		
 	}
 	
 	public static void main(String[] args) {

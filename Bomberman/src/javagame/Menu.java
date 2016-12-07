@@ -27,6 +27,8 @@ public class Menu extends BasicGameState {
 	int serverPortNumber = 5555;
 	InetAddress serverIPAddress;
 	
+	public static String bombermanInfo = "";
+	
 	public Menu(int state) {
 		
 	}
@@ -89,17 +91,17 @@ public class Menu extends BasicGameState {
 				byte[] receiveData = new byte[dataLength];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				
-				System.out.println("asdfghjkl");
 				
 				// receive a message via clientSocket
 				clientSocket.receive(receivePacket);
-				System.out.println("asdfghjkl2");
-				InetAddress IPAddress = receivePacket.getAddress();
+//				InetAddress IPAddress = receivePacket.getAddress();
 				int serverPort = receivePacket.getPort();
 				String str = new String(receivePacket.getData());
 				
 				str = str.trim();
-				System.out.println(str + "received.");
+				bombermanInfo = str;	
+				System.out.println(">"+bombermanInfo);
+//				System.out.println(str + "received.");
 				
 			} catch(IOException e) {
 				e.printStackTrace();
