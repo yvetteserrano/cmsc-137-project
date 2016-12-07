@@ -1,7 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.EOFException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -39,7 +38,7 @@ public class GreetingServer extends Thread {
 			
 			try{
 				while(true) {
-										
+					
 					//System.out.println("CLIENT SOCKETS>>"+clientSockets);
 					
 					//~ for(int i=0; i<clientSockets.size(); i+=1) {
@@ -54,57 +53,22 @@ public class GreetingServer extends Thread {
 					ArrayList<String> nicknames = new ArrayList<String>();
 					ArrayList<String> messages = new ArrayList<String>();
 					
-					int clientSocketsSize = clientSockets.size();
-					boolean goo = false;
 					
-					for(int i=0; i<clientSocketsSize; i+=1) {
-						
-						//~ if(clientSocketsSize != clientSockets.size()) {
-							//~ goo = true;
-							//~ break;
-						//~ }
-						
+					for(int i=0; i<clientSockets.size(); i+=1) {
 						in = new DataInputStream(clientSockets.get(i).getInputStream());
-						System.out.println(clientSockets.size() + " v " + clientSocketsSize);
+						
 						if(in.available() > 0) {
-							clientMsg = "";
-							try {
-								clientMsg = in.readUTF().toString();
-							}catch(EOFException e) {
-								System.out.println("EOFException");
-								e.printStackTrace();
-								break;
-							}
-							if(clientMsg == null || clientMsg == "") {
-								System.out.println("!!!!");
-								break;
-							}
+							clientMsg = in.readUTF().toString();
 							tokens = clientMsg.split("\\`");
-							if(tokens.length < 3) {
-								System.out.println("????");
-								break;
-							}
-							for(int q=0; q<tokens.length; q+=1) {
-								System.out.println(tokens[q]);
-							}
-							if(tokens[0] != null)
-								clientAddresses.add(tokens[0]);
-							if(tokens[1] != null)
-								nicknames.add(tokens[1]);
-							if(tokens[2] != null) {
-								messages.add(tokens[2]);
-								System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
-							}
+							clientAddresses.add(tokens[0]);
+							nicknames.add(tokens[1]);
+							messages.add(tokens[2]);
+							System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
 						} else {
 							continue;
 						}
 						
 					}
-					
-					//~ if(goo) {
-						//~ System.out.println("goo");
-						//~ continue;
-					//~ }
 					
 					//~ clientMsg = in.readUTF().toString();
 					
@@ -115,7 +79,7 @@ public class GreetingServer extends Thread {
 					
 					//~ System.out.println(tokens[0] + " (" + tokens[1] + ")" + ": " + tokens[2]);
 					
-					for(int i=0; i<clientSocketsSize; i+=1) {
+					for(int i=0; i<clientSockets.size(); i+=1) {
 						if(clientSockets.get(i) == clientSocket) {	//skip if self
 							// TODO: FIX SENDING TO SELF
 							continue;
@@ -165,10 +129,7 @@ public class GreetingServer extends Thread {
 			
 			System.out.println("Just connected to " + clientSocket.getRemoteSocketAddress());
 			
-			try {
-				// necessary delay idk why
-				Thread.sleep(10);
-			} catch(Exception e){}
+			
 			
 			
 			

@@ -3,6 +3,9 @@ package javagame;
 import java.util.Random;
 import java.util.ArrayList;
 
+import java.io.IOException;
+import java.net.*;
+
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.gui.TextField;
@@ -10,6 +13,7 @@ import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
 
 public class Play extends BasicGameState {
+
 	
 //	TextField textField = new TextField(null, null, 10, 10, 100, 50);
 	
@@ -56,6 +60,7 @@ public class Play extends BasicGameState {
 	public int[][] map;
 	
 	public static String message;
+	public static String udpMsg;
 	
 	public static ArrayList<String> messages = new ArrayList<String>();
 	
@@ -79,15 +84,25 @@ public class Play extends BasicGameState {
 	
 	int[] duration = {200, 200};
 	
-	Bomberman player1 = new Bomberman(120, 120, 1, 1);
 	
+	Bomberman player1 = new Bomberman(120, 120, 1, 1);
+//	Bomberman player1 = new Bomberman(660, 480, 13, 19);
 //	public static Play play = new Play(1);
+	
+	String serverHostName = "localhost";
+	int serverPortNumber = 5555;
+	InetAddress serverIPAddress;
 	
 	public Play(int state) {
 		
 	}
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		
+		try {
+			serverIPAddress = null;
+			serverIPAddress = InetAddress.getByName(serverHostName);
+		} catch(IOException e) {}
 		
 		field = new TextField(gc, gc.getDefaultFont(), 90, 550, 850, 60, new ComponentListener() {
 			public void componentActivated(AbstractComponent source) {
@@ -440,30 +455,18 @@ public class Play extends BasicGameState {
 			feed.setText(feed.getText() + "\n" +  messages.get(z));
 		}
 		
-//		mapDrawX = 90;
-//		mapDrawY = 90;
-		
-//		for(int i=0; i<map.length; i+=1) {
-//			for(int j=0; j<map[i].length; j+=1) {
-//				if(map[i][j] == GRASS ) {					
-//					grass.draw(mapDrawX, mapDrawY);
-//				} else if(map[i][j] == BRICK ) {			
-//					brick.draw(mapDrawX, mapDrawY);
-//				} else if(map[i][j] ==  BLOCK) {		
-//					block.draw(mapDrawX, mapDrawY);
-//				} else if(map[i][j] ==  BOMB) {		
-//					bomb.draw(mapDrawX, mapDrawY);
-//				} else if(map[i][j] ==  FIRE_H) {		
-//					h_fire.draw(mapDrawX, mapDrawY);
-//				} else if(map[i][j] ==  FIRE_V) {		
-//					v_fire.draw(mapDrawX, mapDrawY);
-//				}
-//				mapDrawX += mapOffsetX;
-//			}
-//			mapDrawY += mapOffsetY;
-//			mapDrawX = 90;
-//		}
-		
+		//UDP Stuff
+		try {
+			
+			udpMsg = "UDPMESSAGEFOO";
+			
+			DatagramSocket clientSocket = new DatagramSocket();
+			byte[] sendData = new byte[udpMsg.length() * 8];
+			sendData = udpMsg.getBytes();
+			
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIPAddress, serverPortNumber);
+			clientSocket.send(sendPacket);
+		}catch(IOException e) {}
 
 	}
 	

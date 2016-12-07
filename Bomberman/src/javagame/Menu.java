@@ -1,5 +1,10 @@
 package javagame;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
 import org.newdawn.slick.*;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
@@ -17,6 +22,10 @@ public class Menu extends BasicGameState {
 	
 	static String nickname;
 	static String serverName;
+	
+	String serverHostName = "localhost";
+	int serverPortNumber = 5555;
+	InetAddress serverIPAddress;
 	
 	public Menu(int state) {
 		
@@ -62,6 +71,43 @@ public class Menu extends BasicGameState {
 			System.out.println(nickname);
 			input.clearKeyPressedRecord();
 			Game.createClient(Menu.serverName, 9999, Menu.nickname);
+			
+			try {
+				serverIPAddress = null;
+				serverIPAddress = InetAddress.getByName(serverHostName);
+				String initialMsg = "X,";
+				DatagramSocket clientSocket = new DatagramSocket();
+				byte[] sendData = new byte[initialMsg.length() * 8];
+				sendData = initialMsg.getBytes();
+				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIPAddress, serverPortNumber);
+				clientSocket.send(sendPacket);
+				
+				
+				//receive reply
+				DatagramSocket clientSocket2 = new DatagramSocket();
+				int dataLength = 100;
+				byte[] receiveData = new byte[dataLength];
+				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+				
+				System.out.println("asdfghjkl");
+				
+				// receive a message via clientSocket
+		//		clientSocket2.receive(receivePacket);
+				// Di umaabot dito. TODO: Fix.
+		//		System.out.println("asdfghjkl2");
+				InetAddress IPAddress = receivePacket.getAddress();
+		//		int serverPort = receivePacket.getPort();
+		//		String str = new String(receivePacket.getData());
+				
+		//		str = str.trim();
+		//		System.out.println(str + "received.");
+				
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+			
+
+			
 			sbg.enterState(1);
 		} else if(input.isKeyPressed(Input.KEY_F2)) {
 			if(nicknameField.hasFocus()) {

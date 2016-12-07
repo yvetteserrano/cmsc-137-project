@@ -1,5 +1,3 @@
-package javagame;
-
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
@@ -20,33 +18,18 @@ public class GreetingClient {
 			
 			System.out.println("Sender started");
 			
-//			DataInputStream in;
+			DataInputStream in;
 			DataOutputStream out;
-			String message = "/";
-			String prevMsg = Play.message;
-//			Scanner scanner = new Scanner(System.in);
+			String message;
+			Scanner scanner = new Scanner(System.in);
 			try{
 				
 				while(true) {
-//					System.out.print("Message: ");
-//					message = null;
-					while(true) {
-//						message = scanner.nextLine();
-//						System.out.println(message + " v " + prevMsg);
-						try {
-							// necessary delay idk why
-							Thread.sleep(10);
-						} catch(Exception e){}
-//						System.out.println();
-						if(Play.message != null) {	// if current message == previous message, get a new msg
-							
-							message = Play.message;
-							
-//							System.out.println(">>>>>>>>"+message);
-							break;
-						}
+					System.out.print("Message: ");
+					message = "";
+					while(message.equals("")) {
+						message = scanner.nextLine();
 					}
-					
 					//~ System.out.println(scanner.nextLine());
 					if(message == "/exit") {
 						System.out.println("exit");
@@ -55,23 +38,8 @@ public class GreetingClient {
 						break;
 					}
 					/* Send data to the ServerSocket */
-//					if(message != null && message != "") {
-					if(Play.message != null) {
-						out = new DataOutputStream(clientSocket.getOutputStream());
-						out.writeUTF(clientSocket.getLocalSocketAddress()+"`"+nickname+"`"+message);
-						String temp = nickname+": "+message;
-//						if(temp.length() >= 22) {
-//							Play.messages.add(temp.substring(0, 21));	//chat box
-//							Play.messages.add(temp.substring(21));	//chat box
-//						} else {
-//							Play.messages.add(temp);	//chat box
-//						}
-						
-//						message = null;
-						prevMsg = message;
-						Play.message = null;
-					}
-//					message = null;
+					out = new DataOutputStream(clientSocket.getOutputStream());
+					out.writeUTF(clientSocket.getLocalSocketAddress()+"`"+nickname+"`"+message);
 				}
 				
 			}catch(IOException e) {
@@ -93,9 +61,9 @@ public class GreetingClient {
 			System.out.println("Fetcher started");
 			
 			DataInputStream in;
-//			DataOutputStream out;
-//			String message;
-//			Scanner scanner = new Scanner(System.in);
+			DataOutputStream out;
+			String message;
+			Scanner scanner = new Scanner(System.in);
 			try{
 				
 				while(true) {
@@ -143,12 +111,12 @@ public class GreetingClient {
 			
 			
 			 //insert missing line for closing the socket from the client side - client.close()
-		}catch(IOException e) {
-			//e.printStackTrace();
-			System.out.println("Cannot find Server");
-		}catch(ArrayIndexOutOfBoundsException e) {
-			System.out.println("Usage: java GreetingClient <server ip> <port no.> '<nickname>'");
-		}
+			}catch(IOException e) {
+				//e.printStackTrace();
+				System.out.println("Cannot find Server");
+			}catch(ArrayIndexOutOfBoundsException e) {
+				System.out.println("Usage: java GreetingClient <server ip> <port no.> '<nickname>'");
+			}
 	}
 }
 
@@ -156,3 +124,4 @@ public class GreetingClient {
 * a) Socket client = new Socket(serverName, port);
 * b) client.close();
 **/
+

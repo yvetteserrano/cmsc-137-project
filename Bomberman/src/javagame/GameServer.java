@@ -1,6 +1,7 @@
 package javagame;
 
 import java.net.*;
+import java.io.IOException;
 
 public class GameServer implements Runnable {
 	private final int clientPort;
